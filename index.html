@@ -74,37 +74,36 @@
     </div>
 
     <script>
-        // SUBSTITUA pelo seu nome de usuário do GitHub
-        const githubUsername = 'SEU_USUARIO_AQUI'; 
+       // SUBSTITUA pelo seu nome de usuário do GitHub
+const githubUsername = 'felipecaetano-prog'; 
 
-        async function fetchRepos() {
-            try {
-                const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=6`);
-                const repos = await response.json();
-                const grid = document.getElementById('repos-grid');
-                
-                grid.innerHTML = ''; // Limpa o container
+async function fetchRepos() {
+    try {
+        // Aumentamos o limite para trazer até 20 repositórios ordenados pelos atualizados recentemente
+        const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=20`);
+        const repos = await response.json();
+        const grid = document.getElementById('repos-grid');
+        
+        grid.innerHTML = ''; // Limpa o container
 
-                repos.forEach(repo => {
-                    // Ignora repositórios que são forks para mostrar apenas os seus
-                    if (!repo.fork) {
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        card.innerHTML = `
-                            <h3>${repo.name}</h3>
-                            <p>${repo.description || 'Sem descrição disponível.'}</p>
-                            <a href="${repo.html_url}" target="_blank">Ver Repositório →</a>
-                        `;
-                        grid.appendChild(card);
-                    }
-                });
-            } catch (error) {
-                console.error('Erro ao buscar repositórios:', error);
-                document.getElementById('repos-grid').innerHTML = '<p>Erro ao carregar projetos.</p>';
-            }
-        }
+        repos.forEach(repo => {
+            // Removemos a trava de fork para mostrar TODOS os seus repositórios públicos
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>${repo.name}</h3>
+                <p>${repo.description || 'Sem descrição disponível para este projeto.'}</p>
+                <a href="${repo.html_url}" target="_blank">Ver Repositório →</a>
+            `;
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Erro ao buscar repositórios:', error);
+        document.getElementById('repos-grid').innerHTML = '<p>Erro ao carregar projetos.</p>';
+    }
+}
 
-        fetchRepos();
+fetchRepos();
     </script>
 </body>
 </html>
