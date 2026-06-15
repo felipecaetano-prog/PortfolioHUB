@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHUB</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --border-color: #30363d;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h1 { color: #fff; margin-bottom: 10px; }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
+        .card h3 { margin: 0 0 10px 0; color: #fff; }
+        .card p { font-size: 14px; color: #8b949e; flex-grow: 1; }
+        .card a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Meu PortfolioHUB</h1>
+        <p>Projetos integrados dinamicamente do GitHub</p>
+    </header>
+
+    <div class="container">
+        <div class="grid" id="repos-grid">
+            <!-- Os projetos do GitHub vão aparecer aqui dinamicamente -->
+        </div>
+    </div>
+
+    <script>
+        // SUBSTITUA pelo seu nome de usuário do GitHub
+        const githubUsername = 'SEU_USUARIO_AQUI'; 
+
+        async function fetchRepos() {
+            try {
+                const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&per_page=6`);
+                const repos = await response.json();
+                const grid = document.getElementById('repos-grid');
+                
+                grid.innerHTML = ''; // Limpa o container
+
+                repos.forEach(repo => {
+                    // Ignora repositórios que são forks para mostrar apenas os seus
+                    if (!repo.fork) {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                            <h3>${repo.name}</h3>
+                            <p>${repo.description || 'Sem descrição disponível.'}</p>
+                            <a href="${repo.html_url}" target="_blank">Ver Repositório →</a>
+                        `;
+                        grid.appendChild(card);
+                    }
+                });
+            } catch (error) {
+                console.error('Erro ao buscar repositórios:', error);
+                document.getElementById('repos-grid').innerHTML = '<p>Erro ao carregar projetos.</p>';
+            }
+        }
+
+        fetchRepos();
+    </script>
+</body>
+</html>
